@@ -1,0 +1,8 @@
+The errors package has lots of transitive dependencies
+
+TODO
+set by-value
+set in macro
+swallowing newlines after directives
+macro
+macro in macro
