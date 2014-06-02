@@ -1,0 +1,159 @@
+#set( $b = '\' )
+#set( $d = '$' )
+#set( $h = '#' )
+
+Assignment
+
+#set( $x = 'x' )
+#set( $y = 'y' )
+#set( $z = "$x$y" )
+
+    Expected    : x y xy
+    Actual      : $x $y $z
+
+#set( $x = "y" )
+
+    Expected    : yy
+    Actual      : $z
+
+Recursive macros
+
+#macro(r)#macro(s)s#end r#end
+
+    Expected:   s
+    Actual:     #s
+
+    Expected:   r
+    Actual:     #r
+
+Set in macro is non-local
+
+#set($u = 'a')
+#macro(macLocal)
+    #set($u = 'b')
+    #set($v = 'c')
+#end
+
+    Expected:   a
+    Actual:     $u
+
+    Expected:   ${d}v
+    Actual:     $v
+
+#macLocal
+
+    Expected:   b
+    Actual:     $u
+
+    Expected:   c
+    Actual:     $v
+
+Macro argument scope
+
+#macro(macArg $arg)
+    #set($arg = 'poof')
+    $arg
+#end
+
+    Expected:   bla
+    Actual  :   #macArg('bla')
+
+    Expected:   ${d}arg
+    Actual  :   $arg
+
+Redefining macros
+
+#macro(redefmac)a#end
+#macro(redefmac)b#end
+
+    Expected:   b
+    Actual:     #redefmac
+
+Things that can be macro arguments
+
+#macro(echo $arg)$arg#end
+#set($myvar = 'myvar')
+
+    Expected:   x
+    Actual:     #echo('x')
+
+    Expected:   ${h}undefined('x')
+    Actual:     #undefined('x')
+
+    Expected:   myvar
+    Actual:     #echo($undefined)
+
+Literal escaping
+
+    Expected:   '
+    Actual:     #echo('a \'' b' 'c' 'd')
+
+Line comment non-escaping
+
+    Expected:   \
+    Actual:     \## text
+
+Set bozo ============================
+
+    #set bozo
+    #set wollahop
+
+Space in formal variable reference
+
+    Expected:   ${d}{undefined}
+    Actual:     ${undefined}
+
+Unmatched parenthesis in non-macro argument
+
+    The argument list is parsed although the macro is not defined.
+
+    Expected:   ${h}undefined( ab )
+    Actual:     #undefined( ab )
+
+    Expected:   ))
+    Actual:     ))
+
+Redefining reserved keyword
+
+## defining is okay but cannot be used directly
+## #set('a') raises parse error
+#macro(mySet $a)$a#end
+#set($woohoo = 'mySet')
+
+    Expected:   \#mySet('a')
+    Actual:     #$woohoo('a')
+
+Wobegon
+
+#macro(wobegon)wobegon#end
+
+    Expected:   wobegon
+    Actual:     #wobegon
+
+        \#macro(buff)buff\#end
+        \#undefined
+        \#mySet
+
+Macro and variable namespace
+
+Dollars, hashes, and backslashes
+
+    Expected:   ${d}1 ${h}1
+    Actual:     $1 #1
+
+    Expected:   $d$d $d$h $h$d $h$d$d$h
+    Actual:     $$ $# #$ #$$#
+
+    Expected:   ${b}1 $b$d $b$h $b $b$b $b$b$b
+    Actual:     \1 \$ \# \ \\ \\\
+
+Quotes
+
+    Expected:   'a' "a"
+    Actual:     'a' "a"
+
+Set expressions
+
+#set($x = 0 != '0')
+
+$x

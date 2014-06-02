@@ -1,0 +1,14 @@
+Undefined variable
+
+    $undefined
+
+Quiet undefined variable
+
+    $!undefined
+
+#set($a = 1)
+#set($b = $a + 1)
+#set($c = $a + $b)
+$a
+$b
+$c
